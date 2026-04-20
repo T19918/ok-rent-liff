@@ -32,21 +32,21 @@
         </div>
 
         <form id="reportForm">
-            <h5 class="border-bottom pb-2 mt-4">📋 核心資料 (必填)</h5>
+            <h5 class="border-bottom pb-2 mt-4">📋 核心資料 (*必填)</h5>
             
             <div class="mb-3 mt-3">
-                <label class="form-label fw-bold">租客手機號碼</label>
+                <label class="form-label fw-bold">*租客手機號碼</label>
                 <input type="tel" class="form-control" id="tenantPhone" placeholder="請輸入 09 開頭的完整號碼" pattern="[0-9]*" required>
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">租客身分證字號</label>
+                <label class="form-label fw-bold">*租客身分證字號</label>
                 <input type="text" class="form-control" id="tenantId" placeholder="請輸入身分證字號" required>
                 <div class="highlight-alert">租客身份資料將嚴格保密。</div>
             </div>
 
             <div class="mb-3 mt-4">
-                <label class="form-label fw-bold">通報類型 (可複選)</label><br>
+                <label class="form-label fw-bold">*通報類型 (可複選)</label><br>
                 <input type="checkbox" class="btn-check" id="type1" value="租金">
                 <label class="btn btn-outline-brand btn-sm" for="type1">💰 租金</label>
 
@@ -73,7 +73,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">最近發生年份</label>
+                <label class="form-label fw-bold">*發生年份</label>
                 <select class="form-select" id="happenYear" required>
                     <option value="" selected disabled>請選擇年份</option>
                 </select>
@@ -82,12 +82,12 @@
             <h5 class="border-bottom pb-2 mt-5">📝 詳細描述</h5>
             
             <div class="mb-3 mt-3">
-                <label class="form-label fw-bold">事件簡述 (必填)</label>
+                <label class="form-label fw-bold">*事件簡述</label>
                 <textarea class="form-control" id="eventDesc" rows="4" placeholder="請簡述經過，例如：「積欠三個月房租後失聯，留下滿屋垃圾。」(限 200 字內)" maxlength="200" required></textarea>
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">上傳佐證資料 (強烈鼓勵)</label>
+                <label class="form-label fw-bold">上傳佐證資料 (建議提供)</label>
                 <input class="form-control" type="file" id="evidenceFiles" multiple accept="image/*">
                 <div class="form-text">若租客投訴不實控告時，無提供佐證資料的紀錄將會被取消。</div>
                 <div class="highlight-alert mt-1">有附圖的紀錄，可信度權重較高。請務必遮蔽租約上的個資（如身分證字號、詳細地址），僅保留關鍵違約證據。</div>
