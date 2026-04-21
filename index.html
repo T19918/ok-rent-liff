@@ -47,6 +47,22 @@
         .btn-submit { background-color: var(--brand-color); color: white; border: none; font-weight: bold; padding: 15px; border-radius: 10px; font-size: 1.1rem;}
         .btn-submit:hover { background-color: var(--brand-hover); color: white; }
         #userInfo { font-size: 0.85rem; color: #198754; text-align: center; margin-top: 15px; font-weight: bold;}
+
+        /* 修正勾選框對齊樣式 */
+        .legal-check-container {
+            display: flex;
+            align-items: flex-start; /* 從頂部對齊 */
+            background-color: #fff8f8;
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+        .legal-check-container .form-check-input {
+            margin-top: 0.3rem; /* 微調勾選框高度，對齊第一行字 */
+            flex-shrink: 0; /* 防止勾選框被擠壓變形 */
+        }
     </style>
 </head>
 <body>
@@ -98,7 +114,7 @@
                 <label class="form-label fw-bold">發生年份 <span class="text-danger">*</span></label>
                 <select class="form-select" id="happenYear" required>
                     <option value="" selected disabled>請選擇發生年份</option>
-                    </select>
+                </select>
             </div>
 
             <div class="section-title">📝 詳細描述</div>
@@ -114,9 +130,11 @@
                 <div class="highlight-alert mt-2">有附圖的紀錄權重較高。請務必遮蔽個資，僅保留關鍵證據。</div>
             </div>
 
-            <div class="form-check mt-4 mb-4 p-3 bg-light border border-danger rounded">
-                <input class="form-check-input ms-1" type="checkbox" id="legalCheck" required>
-                <label class="form-check-label ms-2 fw-bold text-danger" for="legalCheck"> [ 必勾 ] 我鄭重聲明：通報內容皆屬實，並承擔相關法律責任。</label>
+            <div class="legal-check-container">
+                <input class="form-check-input" type="checkbox" id="legalCheck" required>
+                <label class="form-check-label fw-bold text-danger ms-2" for="legalCheck">
+                    [ 必勾 ] 我鄭重聲明：通報內容皆屬實，並承擔相關法律責任。
+                </label>
             </div>
 
             <div class="d-grid gap-2">
@@ -128,7 +146,6 @@
 </div>
 
 <script>
-    // ⚠️ 請務必替換為你的 LIFF ID
     const MY_LIFF_ID = "2009841191-yODfj8ZB"; 
 
     let customTagsList = [];
@@ -139,7 +156,6 @@
         initLIFF();
     });
 
-    // 1. 產生年份選單 (今年 -> 1980)
     function generateYears() {
         const yearSelect = document.getElementById('happenYear');
         const currentYear = new Date().getFullYear();
@@ -148,22 +164,18 @@
         }
     }
 
-    // 2. 處理自定義標籤邏輯
     function setupCustomTagsLogic() {
         const trigger = document.getElementById('tagOtherTrigger');
         const container = document.getElementById('otherInputContainer');
         const input = document.getElementById('customTagInput');
         const btnAdd = document.getElementById('btnAddCustomTag');
 
-        // 切換輸入框顯示
         trigger.addEventListener('change', function() {
             container.style.display = this.checked ? 'block' : 'none';
         });
 
-        // 點擊新增按鈕
         btnAdd.addEventListener('click', addTag);
 
-        // 按下 Enter 鍵新增
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -181,75 +193,11 @@
         }
     }
 
-    // 渲染動態標籤
     function renderCustomTags() {
         const display = document.getElementById('customTagsDisplay');
         display.innerHTML = '';
         customTagsList.forEach((tag, index) => {
             const span = document.createElement('span');
-            span.className = 'custom-tag';
-            span.innerHTML = `${tag} <span class="btn-close-tag" onclick="removeTag(${index})">✕</span>`;
-            display.appendChild(span);
-        });
-    }
-
-    // 移除標籤
-    window.removeTag = function(index) {
-        customTagsList.splice(index, 1);
-        renderCustomTags();
-    };
-
-    async function initLIFF() {
-        try {
-            await liff.init({ liffId: MY_LIFF_ID });
-            if (!liff.isLoggedIn()) {
-                liff.login();
-            } else {
-                const profile = await liff.getProfile();
-                document.getElementById('userInfo').innerHTML = `🛡️ 房東驗證成功：${profile.displayName}`;
-            }
-        } catch (err) {
-            console.error('LIFF Error:', err);
-        }
-    }
-
-    document.getElementById('reportForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const checkedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value);
-        const allTags = [...checkedTags, ...customTagsList];
-
-        if(allTags.length === 0) {
-            alert('請至少選擇或新增一項通報類型！');
-            return;
-        }
-
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "資料建檔中...";
-        btn.disabled = true;
-
-        const phone = document.getElementById('tenantPhone').value;
-        const year = document.getElementById('happenYear').value;
-        const tagsString = allTags.join('、');
-
-        try {
-            if (liff.isInClient()) {
-                await liff.sendMessages([{
-                    'type': 'text',
-                    'text': `【系統通知】收到匿名通報\n\n對象：${phone}\n年份：${year}年\n類型：${tagsString}\n\n感謝您的回報，紀錄已建立。`
-                }]);
-                liff.closeWindow();
-            } else {
-                alert('模擬送出成功！標籤包含：' + tagsString);
-                btn.disabled = false;
-                btn.innerText = "🚀 確認送出，建立匿名紀錄";
-            }
-        } catch (err) {
-            alert('傳送失敗');
-            btn.disabled = false;
-        }
-    });
-</script>
 
 </body>
 </html>
